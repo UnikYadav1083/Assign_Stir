@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STIR Assignment</title>
+  </head>
+  <body>
+    <h1>Twitter trending scraper</h1>
+    <button>Click here to run the script</button>
+    <p id="output"></p>
+    <ul id="trending-topics"></ul>
+    <p id="ip-used"></p>
+    <p id="mongo-result"></p>
+    <pre id="mongo-json"></pre>
+
+    <script>
+      document.querySelector("button").addEventListener("click", async () => {
+        document.querySelector("button").textContent = "Running...";
+        document.querySelector("button").disabled = true;
+
+        const response = await fetch("http://localhost:3000/");
+        const data = await response.json();
+
+        document.querySelector("button").textContent =
+          "Click here to run the script";
+        document.querySelector("button").disabled = false;
+
+        document.getElementById(
+          "output"
+        ).textContent = `These are the most happening topics as on ${new Date(
+          data.currentTime
+        ).toLocaleString()}`;
+
+        const trendingTopicsList = document.getElementById("trending-topics");
+        trendingTopicsList.innerHTML = "";
+        data.trendingTopics.forEach((topic) => {
+          const li = document.createElement("li");
+          li.textContent = topic;
+          trendingTopicsList.appendChild(li);
+        });
+
+        document.getElementById(
+          "ip-used"
+        ).textContent = `IP used: ${data.ipv4Address}`;
+        document.getElementById(
+          "mongo-result"
+        ).textContent = `MongoDB result: `;
+        document.getElementById("mongo-json").textContent = JSON.stringify(
+          JSON.parse(data.mongoObj),
+          null,
+          2
+        );
+      });
+    </script>
+  </body>
+</html>
